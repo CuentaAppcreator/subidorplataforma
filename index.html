@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>🖤 Panel de Publicación</title>
+  <style>
+    :root {
+      --bg: #0f0f0f;
+      --fg: #ffffff;
+      --accent: #ffd700;
+      --border: #2a2a2a;
+    }
+
+    body {
+      background-color: var(--bg);
+      color: var(--fg);
+      font-family: 'Segoe UI', sans-serif;
+      padding: 20px;
+      margin: 0;
+    }
+
+    h2, h3 {
+      color: var(--accent);
+    }
+
+    textarea, input[type="text"] {
+      width: 100%;
+      background: #1c1c1c;
+      color: var(--fg);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 10px;
+      margin-top: 10px;
+      margin-bottom: 15px;
+      box-sizing: border-box;
+    }
+
+    .repos label {
+      display: flex;
+      align-items: center;
+      margin-bottom: 10px;
+      background: #1a1a1a;
+      padding: 8px 12px;
+      border-radius: 6px;
+      cursor: pointer;
+    }
+
+    .repos input[type="checkbox"] {
+      margin-right: 10px;
+      transform: scale(1.2);
+    }
+
+    .token-inputs {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    @media (min-width: 500px) {
+      .token-inputs {
+        flex-direction: row;
+      }
+    }
+
+    button {
+      background-color: var(--accent);
+      color: #000;
+      border: none;
+      padding: 10px 20px;
+      font-size: 16px;
+      border-radius: 6px;
+      cursor: pointer;
+      margin-top: 10px;
+      transition: background 0.3s;
+    }
+
+    button:hover {
+      background-color: #e6c200;
+    }
+
+    #resultado {
+      margin-top: 20px;
+      background-color: #121212;
+      border: 1px solid var(--border);
+      padding: 10px;
+      border-radius: 6px;
+      white-space: pre-wrap;
+    }
+  </style>
+</head>
+<body>
+
+<h2>📺 Panel de Publicación - Plataformas</h2>
+
+<textarea id="codigo" placeholder="Pega aquí tu bloque HTML..."></textarea>
+
+<h3>🎬 Selecciona repositorios de destino:</h3>
+<div class="repos">
+  <label><input type="checkbox" value="appletv"> Apple TV</label>
+  <label><input type="checkbox" value="netflix"> Netflix</label>
+  <label><input type="checkbox" value="disney"> Disney</label>
+  <label><input type="checkbox" value="fox"> 20th Century Fox</label>
+  <label><input type="checkbox" value="hbomax"> HBO Max</label>
+  <label><input type="checkbox" value="primevideo"> Prime Video</label>
+  <label><input type="checkbox" value="paramount"> Paramount</label>
+  <label><input type="checkbox" value="universal"> Universal</label>
+  <label><input type="checkbox" value="warnerbros"> Warner Bros</label>
+  <label><input type="checkbox" value="marvel"> Marvel</label>
+  <label><input type="checkbox" value="dccomic"> DC</label>
+  <label><input type="checkbox" value="navidad"> Navidad</label>
+  <label><input type="checkbox" value="religion"> Cine Cristiano</label>
+  <label><input type="checkbox" value="dreamworks"> DreamWorks</label>
+</div>
+
+<h3>🔐 Token de GitHub (se guarda localmente): ghp_qxD8mdWLHhrJrVRh   d1tdF4ZDtpUVEC1cjWZq</h3>
+<div class="token-inputs">
+  <input type="text" id="token1" placeholder="">
+  <input type="text" id="token2" placeholder="">
+</div>
+<button onclick="guardarToken()">💾 Guardar Token</button>
+<button onclick="publicarCodigo()">🚀 Publicar Código</button>
+
+<pre id="resultado"></pre>
+
+<script>
+const reposUrls = {
+  appletv:      'https://api.github.com/repos/cuentaappcreator/appletv/contents/index.html',
+  netflix:      'https://api.github.com/repos/cuentaappcreator/netflix/contents/index.html',
+  disney:       'https://api.github.com/repos/cuentaappcreator/Disney/contents/index.html',
+  fox:          'https://api.github.com/repos/cuentaappcreator/20centuryfox/contents/index.html',
+  hbomax:       'https://api.github.com/repos/cuentaappcreator/HBOMAX/contents/index.html',
+  primevideo:   'https://api.github.com/repos/cuentaappcreator/primevideo/contents/index.html',
+  paramount:    'https://api.github.com/repos/cuentaappcreator/paramount/contents/index.html',
+  universal:    'https://api.github.com/repos/cuentaappcreator/universal/contents/index.html',
+  warnerbros:   'https://api.github.com/repos/cuentaappcreator/warnerbros/contents/index.html',
+  marvel:       'https://api.github.com/repos/cuentaappcreator/marvel/contents/index.html',
+  dccomic:      'https://api.github.com/repos/cuentaappcreator/dccomic/contents/index.html',
+  navidad:      'https://api.github.com/repos/cuentaappcreator/navidad/contents/index.html',
+  religion:     'https://api.github.com/repos/cuentaappcreator/religion/contents/index.html',
+  dreamworks:   'https://api.github.com/repos/cuentaappcreator/dreamworks/contents/index.html',
+};
+
+function guardarToken() {
+  const part1 = document.getElementById("token1").value.trim();
+  const part2 = document.getElementById("token2").value.trim();
+  if (part1 && part2) {
+    localStorage.setItem("github_token", part1 + part2);
+    alert("✅ Token guardado exitosamente");
+  }
+}
+
+async function publicarCodigo() {
+  const codigo = document.getElementById("codigo").value;
+  const token = localStorage.getItem("github_token");
+  const resultado = document.getElementById("resultado");
+  resultado.textContent = "";
+
+  if (!codigo || !token) {
+    alert("⚠️ Debes ingresar el código y tener un token guardado.");
+    return;
+  }
+
+  const seleccionados = [...document.querySelectorAll(".repos input:checked")].map(cb => cb.value);
+
+  for (const repoKey of seleccionados) {
+    const url = reposUrls[repoKey];
+
+    try {
+      const res = await fetch(url, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      const data = await res.json();
+
+      const contenido = atob(data.content);
+      const nuevoContenido = contenido.replace(
+        /<!--PEGAR CONTENIDO AQUI ABAJO-->/,
+        `<!--PEGAR CONTENIDO AQUI ABAJO-->\n${codigo}`
+      );
+
+      const updateRes = await fetch(url, {
+        method: "PUT",
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+          message: "🔄 Código insertado automáticamente",
+          content: btoa(nuevoContenido),
+          sha: data.sha
+        })
+      });
+
+      if (updateRes.ok) {
+        resultado.textContent += `✅ Subido a ${repoKey} correctamente\n`;
+      } else {
+        resultado.textContent += `❌ Error subiendo a ${repoKey}\n`;
+      }
+    } catch (err) {
+      resultado.textContent += `❌ Fallo en ${repoKey}: ${err.message}\n`;
+    }
+  }
+}
+</script>
+
+</body>
+</html>
