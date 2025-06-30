@@ -1,109 +1,138 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>🖤 Panel de Publicación</title>
   <style>
     :root {
       --bg: #0f0f0f;
       --fg: #ffffff;
-      --accent: #ffd700;
+      --accent: #00d1b2;
       --border: #2a2a2a;
+      --input-bg: #1c1c1c;
+      --input-focus: #00b89c;
+    }
+
+    * {
+      box-sizing: border-box;
     }
 
     body {
       background-color: var(--bg);
       color: var(--fg);
       font-family: 'Segoe UI', sans-serif;
-      padding: 20px;
       margin: 0;
+      padding: 30px 20px;
+      line-height: 1.6;
     }
 
     h2, h3 {
       color: var(--accent);
+      margin-top: 30px;
     }
 
     textarea, input[type="text"] {
       width: 100%;
-      background: #1c1c1c;
+      background: var(--input-bg);
       color: var(--fg);
       border: 1px solid var(--border);
       border-radius: 8px;
-      padding: 10px;
-      margin-top: 10px;
-      margin-bottom: 15px;
-      box-sizing: border-box;
+      padding: 12px 14px;
+      font-size: 15px;
+      transition: border 0.3s, box-shadow 0.3s;
+    }
+
+    textarea:focus, input[type="text"]:focus {
+      border-color: var(--input-focus);
+      outline: none;
+      box-shadow: 0 0 5px var(--input-focus);
+    }
+
+    textarea {
+      height: 160px;
+      resize: vertical;
+      margin-bottom: 20px;
+    }
+
+    .repos {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+      gap: 12px;
+      margin-bottom: 20px;
     }
 
     .repos label {
-      display: flex;
-      align-items: center;
-      margin-bottom: 10px;
       background: #1a1a1a;
-      padding: 8px 12px;
+      padding: 10px 14px;
       border-radius: 6px;
       cursor: pointer;
+      display: flex;
+      align-items: center;
+      border: 1px solid transparent;
+      transition: all 0.2s ease;
     }
 
     .repos input[type="checkbox"] {
       margin-right: 10px;
       transform: scale(1.2);
+      accent-color: var(--accent);
+    }
+
+    .repos label:hover {
+      border-color: var(--accent);
+      background: #1e1e1e;
     }
 
     .token-inputs {
-      display: flex;
-      flex-direction: column;
-      gap: 10px;
-    }
-
-    @media (min-width: 500px) {
-      .token-inputs {
-        flex-direction: row;
-      }
+      margin-bottom: 20px;
     }
 
     button {
       background-color: var(--accent);
       color: #000;
       border: none;
-      padding: 10px 20px;
+      padding: 12px 20px;
       font-size: 16px;
+      font-weight: bold;
       border-radius: 6px;
       cursor: pointer;
+      margin-right: 10px;
       margin-top: 10px;
-      transition: background 0.3s;
+      transition: background 0.3s ease;
     }
 
     button:hover {
-      background-color: #e6c200;
+      background-color: var(--input-focus);
     }
 
     #resultado {
-      margin-top: 20px;
+      margin-top: 25px;
       background-color: #121212;
       border: 1px solid var(--border);
-      padding: 10px;
+      padding: 14px;
       border-radius: 6px;
       white-space: pre-wrap;
+      font-family: monospace;
     }
   </style>
 </head>
 <body>
 
-<h2>📺 Panel de Publicación - Plataformas</h2>
+<h2>🧩 Panel de Publicación Oscuro</h2>
 
 <textarea id="codigo" placeholder="Pega aquí tu bloque HTML..."></textarea>
 
-<h3>🎬 Selecciona repositorios de destino:</h3>
+<h3>📂 Selecciona repositorios:</h3>
 <div class="repos">
   <label><input type="checkbox" value="appletv"> Apple TV</label>
   <label><input type="checkbox" value="netflix"> Netflix</label>
   <label><input type="checkbox" value="disney"> Disney</label>
-  <label><input type="checkbox" value="fox"> 20th Century Fox</label>
+  <label><input type="checkbox" value="fox"> Fox</label>
   <label><input type="checkbox" value="hbomax"> HBO Max</label>
   <label><input type="checkbox" value="primevideo"> Prime Video</label>
   <label><input type="checkbox" value="paramount"> Paramount</label>
+  <label><input type="checkbox" value="sony"> Sony</label>
   <label><input type="checkbox" value="universal"> Universal</label>
   <label><input type="checkbox" value="warnerbros"> Warner Bros</label>
   <label><input type="checkbox" value="marvel"> Marvel</label>
@@ -113,11 +142,11 @@
   <label><input type="checkbox" value="dreamworks"> DreamWorks</label>
 </div>
 
-<h3>🔐 Token de GitHub (se guarda localmente): ghp_qxD8mdWLHhrJrVRh   d1tdF4ZDtpUVEC1cjWZq</h3>
+<h3>🔐 Token de GitHub (se guarda localmente):  ghp_pDDq4q6oOwKx5Jqvf RGOeHi1u80u7M34KgGb</h3>
 <div class="token-inputs">
-  <input type="text" id="token1" placeholder="">
-  <input type="text" id="token2" placeholder="">
+  <input type="text" id="tokenCompleto" placeholder="ghp_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxx">
 </div>
+
 <button onclick="guardarToken()">💾 Guardar Token</button>
 <button onclick="publicarCodigo()">🚀 Publicar Código</button>
 
@@ -125,28 +154,30 @@
 
 <script>
 const reposUrls = {
-  appletv:      'https://api.github.com/repos/cuentaappcreator/appletv/contents/index.html',
-  netflix:      'https://api.github.com/repos/cuentaappcreator/netflix/contents/index.html',
-  disney:       'https://api.github.com/repos/cuentaappcreator/Disney/contents/index.html',
-  fox:          'https://api.github.com/repos/cuentaappcreator/20centuryfox/contents/index.html',
-  hbomax:       'https://api.github.com/repos/cuentaappcreator/HBOMAX/contents/index.html',
-  primevideo:   'https://api.github.com/repos/cuentaappcreator/primevideo/contents/index.html',
-  paramount:    'https://api.github.com/repos/cuentaappcreator/paramount/contents/index.html',
-  universal:    'https://api.github.com/repos/cuentaappcreator/universal/contents/index.html',
-  warnerbros:   'https://api.github.com/repos/cuentaappcreator/warnerbros/contents/index.html',
-  marvel:       'https://api.github.com/repos/cuentaappcreator/marvel/contents/index.html',
-  dccomic:      'https://api.github.com/repos/cuentaappcreator/dccomic/contents/index.html',
-  navidad:      'https://api.github.com/repos/cuentaappcreator/navidad/contents/index.html',
-  religion:     'https://api.github.com/repos/cuentaappcreator/religion/contents/index.html',
-  dreamworks:   'https://api.github.com/repos/cuentaappcreator/dreamworks/contents/index.html',
+  appletv: 'https://api.github.com/repos/cuentaappcreator/appletv/contents/index.html',
+  netflix: 'https://api.github.com/repos/cuentaappcreator/netflix/contents/index.html',
+  disney: 'https://api.github.com/repos/cuentaappcreator/Disney/contents/index.html',
+  fox: 'https://api.github.com/repos/cuentaappcreator/20centuryfox/contents/index.html',
+  hbomax: 'https://api.github.com/repos/cuentaappcreator/HBOMAX/contents/index.html',
+  primevideo: 'https://api.github.com/repos/cuentaappcreator/primevideo/contents/index.html',
+  paramount: 'https://api.github.com/repos/cuentaappcreator/paramount/contents/index.html',
+  sony: 'https://api.github.com/repos/cuentaappcreator/sony/contents/index.html',
+  universal: 'https://api.github.com/repos/cuentaappcreator/universal/contents/index.html',
+  warnerbros: 'https://api.github.com/repos/cuentaappcreator/warnerbros/contents/index.html',
+  marvel: 'https://api.github.com/repos/cuentaappcreator/marvel/contents/index.html',
+  dccomic: 'https://api.github.com/repos/cuentaappcreator/dccomic/contents/index.html',
+  navidad: 'https://api.github.com/repos/cuentaappcreator/navidad/contents/index.html',
+  religion: 'https://api.github.com/repos/cuentaappcreator/religion/contents/index.html',
+  dreamworks: 'https://api.github.com/repos/cuentaappcreator/dreamworks/contents/index.html',
 };
 
 function guardarToken() {
-  const part1 = document.getElementById("token1").value.trim();
-  const part2 = document.getElementById("token2").value.trim();
-  if (part1 && part2) {
-    localStorage.setItem("github_token", part1 + part2);
+  var token = document.getElementById("tokenCompleto").value.trim();
+  if (token.startsWith("ghp_") && token.length > 20) {
+    localStorage.setItem("github_token", token);
     alert("✅ Token guardado exitosamente");
+  } else {
+    alert("⚠️ Ingresa un token válido que comience con 'ghp_'");
   }
 }
 
